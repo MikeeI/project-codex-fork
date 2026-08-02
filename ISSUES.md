@@ -9,11 +9,11 @@ Next finding ID: ISSUE-2026-015
 
 ### ISSUE-2026-001 — mcp-server: TurnAborted does not finish the active tool request
 
-- `codex_tool_runner.rs` treats `TurnComplete` as terminal but groups `TurnAborted` with ignored events.
-- The runner can keep waiting while its request-to-turn registry entries and thread references remain live.
-- The control flow is source-proven; duplicate research and a runtime reproduction are still required.
+- Codex CLI 0.146.0 emitted `turn_aborted` after cancellation but did not resolve request 3 after 30 seconds.
+- Current upstream forwards then ignores `TurnAborted`; request 4 still completed, proving the server remained responsive.
+- Open issue [#20925](https://github.com/openai/codex/issues/20925) owns the same root cause and observed contract.
 
-Status: Hold — upstream research and runtime reproduction pending.
+Status: Hold — source-diagnosis comment on issue #20925 is not yet drafted or approved.
 Location: Not published.
 
 ## Core Issues
