@@ -1,3 +1,16 @@
+# Finding Ledger
+
+- At the start of every agent session, agents MUST read the root `ISSUES.md` before repository work.
+- Before adding a finding, agents MUST search every ledger entry and update an existing matching root cause.
+- New findings MUST use the global `Next finding ID` value and increment it in the same edit.
+- Finding IDs use `ISSUE-YYYY-NNN` and are permanent; NEVER reuse, renumber, or scope them.
+- Agents MUST update `ISSUES.md` in the same task whenever a finding is discovered or its status changes.
+- Every entry MUST contain a title, exactly three summary bullets, a publication status, and a location.
+- Use `Location: Not published.` when no external report exists.
+- `FORMAT.md` is authoritative for research, drafting, duplicate prevention, approval, and publication.
+- Codex contributions are issue-first and pull requests are invitation-only per `docs/contributing.md`.
+- Never offer, draft, or implement an upstream pull request unless a maintainer explicitly invites one.
+
 # Rust/codex-rs
 
 In the codex-rs folder where the rust code lives:
