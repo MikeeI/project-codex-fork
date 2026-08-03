@@ -9,11 +9,13 @@ Next finding ID: ISSUE-2026-015
 
 ### ISSUE-2026-001 — mcp-server: TurnAborted does not finish the active tool request
 
-- Codex CLI 0.146.0 emitted `turn_aborted` after cancellation but did not resolve request 3 after 30 seconds.
-- Current upstream forwards then ignores `TurnAborted`; request 4 still completed, proving the server remained responsive.
-- Open issue [#20925](https://github.com/openai/codex/issues/20925) owns the same root cause and observed contract.
+- Codex CLI 0.146.0 emitted `turn_aborted` after cancellation, but request 3 remained unresolved after 30 seconds.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [`TurnComplete`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/mcp-server/src/codex_tool_runner.rs#L291-L304) finishes the request, while [`TurnAborted`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/mcp-server/src/codex_tool_runner.rs#L318-L380) remains in the ignored arm.
+- Open issue [#20925](https://github.com/openai/codex/issues/20925) owns the exact contract; the latest-version reproduction and pinned diagnosis are materially new comment evidence.
 
-Status: Hold — source-diagnosis comment on issue #20925 is not yet drafted or approved.
+Research: Open and closed issue and pull-request searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issue #20925 was read in full; issue #20194 concerns dropped optional MCP requests, and no matching pull request was found.
+
+Status: Hold — valid source-diagnosis comment target; drafting and approval remain pending.
 Location: Not published.
 
 ## Core Issues
@@ -66,60 +68,72 @@ Location: Existing upstream issue: https://github.com/openai/codex/issues/21945.
 
 ### ISSUE-2026-006 — tui: history grouping fully renders cells only to test visibility
 
-- `add_boxed_history` calls `display_lines(u16::MAX)` and keeps only whether the result is empty.
-- Expensive cells such as patch summaries can repeat scanning, sorting, highlighting, and wrapping later.
-- The discarded render is source-proven; affected cell frequency and UI latency are not measured.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [`add_boxed_history`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/tui/src/chatwidget.rs#L1226-L1243) materializes `display_lines(u16::MAX)` and keeps only whether the vector is empty.
+- The path runs for each inserted history cell; implementations clone stored lines or rebuild summaries and Markdown, so cost and allocation scale with cell content before later viewport rendering repeats the work.
+- No issue or pull request owns the visibility probe; its reachability and avoidable work make it a valid source-only performance concern, but UI latency is not measured.
 
-Status: Hold — upstream research and cell-level measurement pending.
+Research: Exact-symbol and broader TUI visibility/rendering searches of open and closed issues and pull requests were completed 2026-08-03; issue #3414 was unrelated, and no matching pull request was found.
+
+Status: Hold — valid source-only performance issue; drafting and approval remain pending.
 Location: Not published.
 
 ### ISSUE-2026-007 — tui: Markdown table rendering deeply clones owned cells and lines
 
-- `render_table_lines` owns `TableState` but clones each row's cells before wrapping them.
-- The row renderer then clones selected wrapped hyperlink lines before producing the final output.
-- Both clone stages are source-proven; allocation impact for realistic streamed tables is not measured.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [`render_table_lines`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/tui/src/markdown_render.rs#L1085-L1108) owns `TableState` but deeply clones every retained body row.
+- [`render_table_row`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/tui/src/markdown_render.rs#L1463-L1541) then clones selected wrapped lines and hyperlinks; streaming updates and width reflow repeat table rendering.
+- No issue or pull request owns either clone stage; cost scales with table content and render count, making this a valid source-only concern, but allocation volume is not measured.
 
-Status: Hold — upstream research and table-allocation measurement pending.
+Research: Exact-symbol and broader Markdown-table performance searches of open and closed issues and pull requests were completed 2026-08-03; no matching issue or pull request was found.
+
+Status: Hold — valid source-only performance issue; drafting and approval remain pending.
 Location: Not published.
 
 ## App Server Issues
 
 ### ISSUE-2026-008 — app-server: core events are deeply cloned before bespoke handling
 
-- The thread listener passes `event.clone()` at the event value's final use.
-- The bespoke event handler accepts ownership and immediately consumes or destructures the event.
-- The avoidable clone is source-proven; event-size distribution and throughput impact are not measured.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: the [thread listener](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/app-server/src/request_processors/thread_lifecycle.rs#L303-L347) passes `event.clone()` at the value's final use.
+- The owned bespoke handler consumes or destructures the event, so moving it preserves behavior and removes one deep clone from every forwarded core event, including high-frequency deltas and large payload events.
+- No issue or pull request owns this clone; event frequency and the one-token ownership fix make it a valid source-only concern, but allocation throughput is not measured.
 
-Status: Hold — upstream research and event-allocation measurement pending.
+Research: Exact-symbol and broader app-server event-allocation searches of open and closed issues and pull requests were completed 2026-08-03; no matching issue or pull request was found.
+
+Status: Hold — valid source-only performance issue; drafting and approval remain pending.
 Location: Not published.
 
 ### ISSUE-2026-009 — app-server: targeted notifications clone the final subscriber payload
 
-- Targeted fan-out clones one owned `OutgoingMessage` for every selected connection.
-- The original message is discarded, so even the single-subscriber case pays one full payload clone.
-- The clone is source-proven; payload-size and notification-frequency impact are not measured.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [targeted notification fan-out](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/app-server/src/outgoing_message.rs#L579-L613) clones the owned `OutgoingMessage` for every selected connection.
+- The original is discarded, so even one subscriber pays a deep payload clone; moving it to the final connection would preserve order and reduce cost to at most `subscriber_count - 1` clones.
+- No issue or pull request owns this fan-out detail; it affects every targeted thread notification and scales with payload size, but allocation volume is not measured.
 
-Status: Hold — upstream research and notification-allocation measurement pending.
+Research: Exact and broader app-server notification fan-out searches of open and closed issues and pull requests were completed 2026-08-03. Issues #25744, #25779, and #14593 had different root causes; no matching pull request was found.
+
+Status: Hold — valid source-only performance issue; drafting and approval remain pending.
 Location: Not published.
 
 ### ISSUE-2026-010 — app-server: every core event rebuilds the subscriber list
 
-- The event listener locks the global thread-state manager and allocates a new connection-ID vector.
-- Subscriber membership usually changes less frequently than thread events are emitted.
-- The per-event lookup is source-proven; lock contention and allocation impact are not measured.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: every core event [requests a subscriber snapshot](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/app-server/src/request_processors/thread_lifecycle.rs#L327-L334).
+- [`subscribed_connection_ids`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/app-server/src/thread_state.rs#L377-L383) locks the global manager and collects the thread's `HashSet` into a new vector despite subscriber membership changing far less often.
+- No issue or pull request owns this lookup; event frequency and cross-thread lock sharing make contention and allocation realistic, but neither is measured.
 
-Status: Hold — upstream research and lock profiling pending.
+Research: Exact-symbol and broader app-server subscriber-lock searches of open and closed issues and pull requests were completed 2026-08-03; no matching issue or pull request was found.
+
+Status: Hold — valid source-only performance issue; drafting and approval remain pending.
 Location: Not published.
 
 ## TypeScript SDK Issues
 
 ### ISSUE-2026-011 — sdk: abandoned streamed turns do not await child-process closure
 
-- Early generator termination sends a signal but does not await the spawned Codex process's `close` event.
-- Pipe and stderr listeners can remain active until the child exits independently.
-- The lifecycle gap is source-proven; a surviving child process has not yet been reproduced.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [`CodexExec.run`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/sdk/typescript/src/exec.ts#L181-L242) removes child listeners, sends `SIGTERM`, and returns without awaiting `exit` or `close`.
+- A controlled public `codexPathOverride` reproduction returned from `generator.return()` while a SIGTERM-ignoring child remained alive; harness process-tree cleanup then terminated it.
+- No issue or pull request owns the SDK lifecycle gap; issue [#25744](https://github.com/openai/codex/issues/25744) concerns Desktop/MCP helper retention through a different process path.
 
-Status: Hold — upstream research and child-lifecycle reproduction pending.
+Research: Exact-symbol and broader TypeScript SDK child-cleanup searches of open and closed issues and pull requests were completed 2026-08-03. Issue #25744 was read as adjacent evidence but is not the same root cause; no matching pull request was found.
+
+Status: Hold — valid reproduced resource-lifecycle issue; drafting and approval remain pending.
 Location: Not published.
 
 ## Exec Server Issues
@@ -137,11 +151,13 @@ Location: https://github.com/openai/codex/issues/36644
 
 ### ISSUE-2026-013 — exec-server: successful exits aggregate output for a false classification
 
-- Successful sandboxed exits aggregate retained stdout, stderr, and combined output into owned strings.
-- The sandbox-denial classifier returns false immediately when the exit code is zero.
-- The avoidable work is source-proven and bounded; process-exit latency is not measured.
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [successful sandboxed exits](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/exec-server/src/local_process.rs#L917-L951) rebuild retained stdout, stderr, and combined output as vectors and owned strings.
+- Retention is capped at 1 MiB, so this can allocate and copy roughly 4 MiB while holding the global process-map lock before the [classifier returns false on exit code zero](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/sandboxing/src/denial.rs#L13-L19).
+- No issue or pull request owns this exit path; successful sandboxed commands make the cost realistic and the early gate behavior-preserving, but exit latency is not measured.
 
-Status: Hold — upstream research and exit-path measurement pending.
+Research: Exact-symbol and broader exec-server sandbox-classification searches of open and closed issues and pull requests were completed 2026-08-03. Issue #33776 had a different Windows process-storm root cause; no matching pull request was found.
+
+Status: Hold — valid source-only performance issue; drafting and approval remain pending.
 Location: Not published.
 
 ## Exec CLI Issues
