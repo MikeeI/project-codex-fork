@@ -3,7 +3,7 @@
 This file is the sole source of truth for every finding's ID, lifecycle status, and published location.
 Read and update status here instead of inferring it from chat history or earlier search output.
 
-Next finding ID: ISSUE-2026-015
+Next finding ID: ISSUE-2026-020
 
 ## MCP Server Issues
 
@@ -51,6 +51,28 @@ Location: https://github.com/openai/codex/issues/36643
 Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). PRs #34588 and #35777 were read; related MCP startup and catalog results had different root causes.
 
 Status: Retired — the broad claim conflicts with deliberate request-bound catalog design in PR #34588; any stable-schema concern requires a new, separately proven finding.
+Location: Not published.
+
+### ISSUE-2026-016 — core: MCP result sanitization deep-clones unchanged content blocks
+
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [`sanitize_mcp_tool_result_for_model`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/core/src/mcp_tool_call.rs#L816-L848) owns the result but uses `content.iter()` and deeply clones every unchanged JSON block when either image or audio input is unsupported.
+- Large mixed MCP results make the allocation mechanism realistic, while an owned iteration can move unchanged blocks and preserve order, placeholders, `structured_content`, `meta`, and `is_error`; allocation volume and latency are not measured.
+- Issues [#4819](https://github.com/openai/codex/issues/4819), [#10334](https://github.com/openai/codex/issues/10334), and [#9251](https://github.com/openai/codex/issues/9251), plus PRs [#4391](https://github.com/openai/codex/pull/4391) and [#5600](https://github.com/openai/codex/pull/5600), concern media or structured-content semantics rather than this ownership path.
+
+Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Every plausible media-output and structured-content candidate was read; no exact target owns the unchanged-block clone.
+
+Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
+Location: Not published.
+
+### ISSUE-2026-017 — core: MCP event truncation serializes the full result before applying the byte cap
+
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [`truncate_mcp_tool_result_for_event`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/core/src/mcp_tool_call.rs#L849-L890) serializes every successful result to a complete `String` before checking the event byte cap.
+- Oversized results then retain the original structured value, full serialization, and bounded preview together; bounded serialization can preserve escaping, UTF-8, head/tail, fallback, and cap contracts, but peak memory and allocation impact are not measured.
+- PR [#20260](https://github.com/openai/codex/pull/20260) bounded giant MCP rollout records and PR [#32150](https://github.com/openai/codex/pull/32150) added bounded unified-exec collection, but neither removes this helper's full temporary JSON string.
+
+Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Issues #14206 and #35528 and PRs #20260 and #32150 were read as related work; no exact target owns this temporary-allocation root cause.
+
+Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
 Location: Not published.
 
 ## TUI Issues
@@ -123,6 +145,17 @@ Research: Issue, pull-request, discussion, and release searches were completed 2
 Status: Published — opened upstream issue #36656 on 2026-08-03.
 Location: https://github.com/openai/codex/issues/36656
 
+### ISSUE-2026-019 — app-server: WebSocket notification fan-out serializes once per recipient
+
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: admitted notification copies are routed per recipient, and each [`run_websocket_outbound_loop`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/app-server-transport/src/transport/websocket.rs#L289-L325) independently serializes its queued message.
+- Notifications admitted after per-connection filtering are not rewritten, so a shared lazily serialized wrapper can preserve separate queues, write-complete tokens, FIFO order, opt-outs, gating, and slow-client backpressure; serialization cost is not measured.
+- Issue [#36655](https://github.com/openai/codex/issues/36655) owns the targeted emitter's deep payload clone, while PR [#34761](https://github.com/openai/codex/pull/34761) removed an intermediate JSON conversion; neither owns repeated downstream WebSocket serialization.
+
+Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Issues #36654, #36655, #36656, and #23749 and PRs #18265, #32905, and #34761 were read; the serialization root cause is distinct, though implementation should coordinate with #36655.
+
+Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
+Location: Not published.
+
 ## TypeScript SDK Issues
 
 ### ISSUE-2026-011 — sdk: abandoned streamed turns do not await child-process closure
@@ -160,6 +193,17 @@ Research: Issue, pull-request, discussion, and release searches were completed 2
 Status: Published — opened upstream issue #36657 on 2026-08-03.
 Location: https://github.com/openai/codex/issues/36657
 
+### ISSUE-2026-018 — exec-server: streamed HTTP body notifications build an intermediate JSON value
+
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: every remote HTTP body delta passes through [`RpcNotificationSender::notify`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/exec-server/src/rpc.rs#L140-L155), which materializes typed parameters as `serde_json::Value` before the selected transport serializes the enclosing JSON-RPC message.
+- An internal serialized-notification queue item can remove only the intermediate value while preserving required `deltaBase64`, queue and disconnect behavior, ordering, EOF/error semantics, and stdio, WebSocket, or relay framing; CPU and allocation effects are not measured.
+- PR [#18581](https://github.com/openai/codex/pull/18581) introduced the HTTP body-delta protocol and PR [#32112](https://github.com/openai/codex/pull/32112) bounded delta size and queued bytes, but neither owns the typed-parameter intermediate.
+
+Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Protocol and backpressure work in PRs #18581 and #32112 was read; searches by notification type, method, serializer, and stream path found no exact target.
+
+Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
+Location: Not published.
+
 ## Exec CLI Issues
 
 ### ISSUE-2026-014 — exec: resume lookup reads candidate rollout files serially
@@ -172,3 +216,14 @@ Research: Open and closed issue, pull-request, discussion, and release searches 
 
 Status: Published — posted source-analysis evidence to upstream issue #22411 on 2026-08-03.
 Location: https://github.com/openai/codex/issues/22411#issuecomment-5161236975
+
+### ISSUE-2026-015 — exec: completion recovery loads the full legacy rollout for one turn
+
+- Revalidated 2026-08-03 at upstream commit `bb5054f`: [`maybe_backfill_turn_completed_items`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/exec/src/lib.rs#L1348-L1388) requests all turns, then selects one, while [`RolloutRecorder::load_rollout_items`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/rollout/src/recorder.rs#L989-L1052) reads and retains the complete legacy rollout.
+- A completion-recovery read returning only the matched turn can preserve the active-turn and non-ephemeral gates, paginated behavior, backpressure fallback, warnings, final output, item order, and completion ordering; latency, I/O, and allocation impact are not measured.
+- Issue [#21211](https://github.com/openai/codex/issues/21211) concerns full hydration in a Desktop thread-open path, issue [#22411](https://github.com/openai/codex/issues/22411) concerns listing/resume scans, and PRs [#16795](https://github.com/openai/codex/pull/16795) and [#34226](https://github.com/openai/codex/pull/34226) preserve the active non-ephemeral recovery path.
+
+Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Issues #16781, #21211, and #22411 and PRs #16795 and #34226 were read; none targets a one-turn completion-recovery read for `exec`.
+
+Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
+Location: Not published.
