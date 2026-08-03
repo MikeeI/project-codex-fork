@@ -15,8 +15,8 @@ Next finding ID: ISSUE-2026-015
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issue #20925 remains the exact open target; issues #20194, #14115, and #25061 have different request paths, and historical PR #2365 introduced the still-ignored `TurnAborted` arm.
 
-Status: Drafted — exact source-diagnosis comment for issue #20925 awaits explicit approval.
-Location: Not published.
+Status: Published — posted source-diagnosis evidence to upstream issue #20925 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/20925#issuecomment-5161685679
 
 ## Core Issues
 
@@ -74,8 +74,8 @@ Location: Existing upstream issue: https://github.com/openai/codex/issues/21945.
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release 0.146.0. Issue #21945 and PRs #34194, #34206, and #34232 concern different transcript rendering or ownership paths; no exact target was found.
 
-Status: Drafted — exact Feature Request draft awaits explicit approval.
-Location: Not published.
+Status: Published — opened upstream issue #36652 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36652
 
 ### ISSUE-2026-007 — tui: Markdown table rendering deeply clones owned cells and lines
 
@@ -85,8 +85,8 @@ Location: Not published.
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release 0.146.0. Table-correctness issues had different roots; PRs #22052 and #34045 establish streaming and reflow reachability but do not own the clone stages.
 
-Status: Drafted — exact Feature Request draft awaits explicit approval.
-Location: Not published.
+Status: Published — opened upstream issue #36653 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36653
 
 ## App Server Issues
 
@@ -98,8 +98,8 @@ Location: Not published.
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release 0.146.0. Closed, unmerged PR #29545 included the ownership move inside a broader throughput patch; current source retains the clone, and no active target owns it.
 
-Status: Drafted — exact Feature Request draft awaits explicit approval.
-Location: Not published.
+Status: Published — opened upstream issue #36654 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36654
 
 ### ISSUE-2026-009 — app-server: targeted notifications clone the final subscriber payload
 
@@ -109,8 +109,8 @@ Location: Not published.
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release 0.146.0. PR #32905 introduced timestamped fan-out without changing clone ownership; broader app-server resource issues had different roots, and no exact target was found.
 
-Status: Drafted — exact Feature Request draft awaits explicit approval.
-Location: Not published.
+Status: Published — opened upstream issue #36655 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36655
 
 ### ISSUE-2026-010 — app-server: every core event rebuilds the subscriber list
 
@@ -120,8 +120,8 @@ Location: Not published.
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release 0.146.0. Issues #35676 and #35750 concern presence and unload semantics; closed, unmerged PR #29545 contained a snapshot approach, but no active target owns the per-event rebuild.
 
-Status: Drafted — exact Feature Request draft awaits explicit approval.
-Location: Not published.
+Status: Published — opened upstream issue #36656 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36656
 
 ## TypeScript SDK Issues
 
@@ -133,8 +133,8 @@ Location: Not published.
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release 0.146.0. Issues #34802 and #25744 concern broader process control and Desktop helpers; PRs #6378 and #8825 cover abort support and normal exit waiting, not explicit iterator closure.
 
-Status: Drafted — exact Other Bug draft awaits explicit approval.
-Location: Not published.
+Status: Published — opened upstream issue #36658 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36658
 
 ## Exec Server Issues
 
@@ -157,8 +157,8 @@ Location: https://github.com/openai/codex/issues/36644
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 through release 0.146.0. Issues #18711 and #4859 concern classifier correctness; PR #29424 introduced the exit classification path, but no target owns the zero-exit construction work.
 
-Status: Drafted — exact Feature Request draft awaits explicit approval.
-Location: Not published.
+Status: Published — opened upstream issue #36657 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36657
 
 ## Exec CLI Issues
 
