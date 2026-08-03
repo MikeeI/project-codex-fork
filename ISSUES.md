@@ -37,7 +37,7 @@ Location: Existing upstream issue: https://github.com/openai/codex/issues/29369.
 
 Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issue #13733 and PRs #28306, #28313, and #34825 were read as adjacent work; none owns the local two-stage copy.
 
-Status: Hold — research supports a source-only feature request; exact draft and user approval are pending.
+Status: Drafted — exact source-only feature-request draft prepared 2026-08-03; user approval to publish is pending.
 Location: Not published.
 
 ### ISSUE-2026-004 — codex-mcp: tool catalog derivations repeat for every sampling step
@@ -132,7 +132,7 @@ Location: Not published.
 
 Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). PRs #30273 and #31576 were read as the owning design history; no external thread owns the clone concern.
 
-Status: Hold — research supports a source-only feature request; exact draft and user approval are pending.
+Status: Drafted — exact source-only feature-request draft prepared 2026-08-03; user approval to publish is pending.
 Location: Not published.
 
 ### ISSUE-2026-013 — exec-server: successful exits aggregate output for a false classification
@@ -154,5 +154,5 @@ Location: Not published.
 
 Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issues #22411, #16158, #21211, and #24510 and PR #16338 were read; #22411 is the only direct comment target.
 
-Status: Hold — source-analysis comment on issue #22411 is not yet drafted or approved.
+Status: Drafted — exact source-analysis comment for issue #22411 prepared 2026-08-03; user approval to publish is pending.
 Location: Not published.
