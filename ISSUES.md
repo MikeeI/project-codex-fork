@@ -26,7 +26,7 @@ Location: Not published.
 
 Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issues #29369 and #36210 and PR #34447 were read; #29369 is the sole matching target.
 
-Status: Duplicate — issue #29369 owns the exact root cause; an optional reaction is not yet approved.
+Status: Duplicate — issue #29369 owns the exact root cause; thumbs-up reaction added 2026-08-03.
 Location: Existing upstream issue: https://github.com/openai/codex/issues/29369.
 
 ### ISSUE-2026-003 — core: request construction deeply copies conversation history twice
@@ -61,7 +61,7 @@ Location: Not published.
 
 Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). The complete #21945 thread and PR #34348 were read; they already contain the useful diagnosis and current sample.
 
-Status: Duplicate — issue #21945 owns the exact root cause and already contains current profiling; an optional reaction is not yet approved.
+Status: Duplicate — issue #21945 owns the exact root cause and current profiling; thumbs-up reaction added 2026-08-03.
 Location: Existing upstream issue: https://github.com/openai/codex/issues/21945.
 
 ### ISSUE-2026-006 — tui: history grouping fully renders cells only to test visibility
