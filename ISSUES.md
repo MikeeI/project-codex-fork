@@ -61,19 +61,19 @@ Location: Not published.
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Every plausible media-output and structured-content candidate was read; no exact target owns the unchanged-block clone.
 
-Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
-Location: Not published.
+Status: Published — opened upstream issue #36689 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36689
 
 ### ISSUE-2026-017 — core: MCP event truncation serializes the full result before applying the byte cap
 
 - Revalidated 2026-08-03 at upstream commit `bb5054f`: [`truncate_mcp_tool_result_for_event`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/core/src/mcp_tool_call.rs#L849-L890) serializes every successful result to a complete `String` before checking the event byte cap.
 - Oversized results then retain the original structured value, full serialization, and bounded preview together; bounded serialization can preserve escaping, UTF-8, head/tail, fallback, and cap contracts, but peak memory and allocation impact are not measured.
-- PR [#20260](https://github.com/openai/codex/pull/20260) bounded giant MCP rollout records and PR [#32150](https://github.com/openai/codex/pull/32150) added bounded unified-exec collection, but neither removes this helper's full temporary JSON string.
+- Existing issue [#23131](https://github.com/openai/codex/issues/23131) already documents this exact full-serialization root cause, a bounded-writer candidate patch, and focused validation; PRs [#20260](https://github.com/openai/codex/pull/20260) and [#32150](https://github.com/openai/codex/pull/32150) are adjacent bounded-output work.
 
-Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Issues #14206 and #35528 and PRs #20260 and #32150 were read as related work; no exact target owns this temporary-allocation root cause.
+Research: Issue, pull-request, discussion, and release searches were refreshed 2026-08-03 at upstream commit `bb5054f`. The complete #23131 thread was read after symbol-level search surfaced its producer-side analysis; it owns the exact root cause and proposed resolution.
 
-Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
-Location: Not published.
+Status: Duplicate — issue #23131 already owns the exact bounded-serialization root cause; thumbs-up reaction added 2026-08-03.
+Location: Existing upstream issue: https://github.com/openai/codex/issues/23131.
 
 ## TUI Issues
 
@@ -153,8 +153,8 @@ Location: https://github.com/openai/codex/issues/36656
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Issues #36654, #36655, #36656, and #23749 and PRs #18265, #32905, and #34761 were read; the serialization root cause is distinct, though implementation should coordinate with #36655.
 
-Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
-Location: Not published.
+Status: Published — opened upstream issue #36691 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36691
 
 ## TypeScript SDK Issues
 
@@ -197,12 +197,12 @@ Location: https://github.com/openai/codex/issues/36657
 
 - Revalidated 2026-08-03 at upstream commit `bb5054f`: every remote HTTP body delta passes through [`RpcNotificationSender::notify`](https://github.com/openai/codex/blob/bb5054fe47abe73ecbbd454751066a28c89f4bb9/codex-rs/exec-server/src/rpc.rs#L140-L155), which materializes typed parameters as `serde_json::Value` before the selected transport serializes the enclosing JSON-RPC message.
 - An internal serialized-notification queue item can remove only the intermediate value while preserving required `deltaBase64`, queue and disconnect behavior, ordering, EOF/error semantics, and stdio, WebSocket, or relay framing; CPU and allocation effects are not measured.
-- PR [#18581](https://github.com/openai/codex/pull/18581) introduced the HTTP body-delta protocol and PR [#32112](https://github.com/openai/codex/pull/32112) bounded delta size and queued bytes, but neither owns the typed-parameter intermediate.
+- PR [#18581](https://github.com/openai/codex/pull/18581) introduced the HTTP body-delta protocol, PR [#32112](https://github.com/openai/codex/pull/32112) bounded delta size and queued bytes, and PR [#36006](https://github.com/openai/codex/pull/36006) removed the analogous intermediate `serde_json::Value` from app-server responses; none removes the exec-server notification conversion.
 
-Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Protocol and backpressure work in PRs #18581 and #32112 was read; searches by notification type, method, serializer, and stream path found no exact target.
+Research: Issue, pull-request, discussion, and release searches were refreshed 2026-08-03 at upstream commit `bb5054f`. PRs #18581, #32112, and #36006 were read as protocol, backpressure, and typed-through-queue prior art; no exact target owns the exec-server notification conversion.
 
-Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
-Location: Not published.
+Status: Published — opened upstream issue #36690 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36690
 
 ## Exec CLI Issues
 
@@ -225,5 +225,5 @@ Location: https://github.com/openai/codex/issues/22411#issuecomment-5161236975
 
 Research: Issue, pull-request, discussion, and release searches were completed 2026-08-03 at upstream commit `bb5054f`. Issues #16781, #21211, and #22411 and PRs #16795 and #34226 were read; none targets a one-turn completion-recovery read for `exec`.
 
-Status: Drafted — exact source-only feature-request draft prepared 2026-08-03 and awaiting user approval.
-Location: Not published.
+Status: Published — opened upstream issue #36688 on 2026-08-03.
+Location: https://github.com/openai/codex/issues/36688
