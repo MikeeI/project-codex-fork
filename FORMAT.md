@@ -10,6 +10,8 @@ This file is the single source of truth for reporting findings to the upstream `
 - Never implement a reported fix unless a later user instruction and an upstream invitation authorize it.
 - Default to proposal-only mode and show every complete draft to the user before publication.
 - Publish externally only after the user explicitly approves the exact draft and target.
+- Explicit user direction may authorize an unmeasured source-only potential finding under the exception below.
+- It never waives required research, exact-draft approval, truthful form completion, or uncertainty labels.
 - Write GitHub issues and comments in friendly, concise English.
 - Communicate with the user in the language of the surrounding conversation.
 
@@ -49,6 +51,24 @@ Before drafting anything:
 A search result is only a candidate target.
 A matching component or symbol does not prove that an existing thread owns the same root cause.
 
+## User-Requested Source-Only Potential Findings
+
+An explicit user request to notify maintainers without measuring may qualify a finding for this exception.
+It authorizes a source-only proposal, not publication and not a claim of observed impact.
+
+Every qualifying report must satisfy all of these conditions:
+
+- Current source proves the reachable root cause or control flow.
+- A realistic frequency and non-trivial cost mechanism establish why the finding may matter.
+- The opening states that the reporter found a potential performance concern in current source, not a confirmed bug.
+- The impact section starts with `Not measured.` and identifies the latency, throughput, allocation, or load still unknown.
+- The report includes commit-pinned code evidence, a realistic scenario, and one actionable maintainer question.
+- Required duplicate research is complete, and the selected issue form can be answered truthfully.
+- The report covers one root cause and preserves all normal publication and user-approval gates.
+
+This exception permits a useful source-only heads-up when the user explicitly values maintainer awareness over measurement.
+It does not permit generic static-analysis output, unsupported severity, or inferred production impact.
+
 ## Issue or Comment Decision
 
 Use this decision order for every finding.
@@ -87,7 +107,7 @@ Open a new issue when all applicable conditions hold:
 
 - No open issue or pull request owns the same root cause.
 - Existing matches are closed, historical, tangential, or based on a different cause.
-- The finding has observed behavior or a source-proven invariant with realistic, non-speculative impact.
+- The finding has observed behavior or a source-proven invariant with a realistic, non-speculative cost mechanism.
 - The finding needs durable tracking beyond a temporary pull request discussion.
 
 Link relevant historical issues and pull requests without reviving or hijacking them.
@@ -99,7 +119,7 @@ Do not publish when any of the following is true:
 
 - Reachability, root cause, currentness, or affected release is unverified.
 - The claim is only a static pattern without realistic cost or behavior evidence.
-- A performance claim lacks a reproduction, measurement, or deterministic resource-lifetime proof.
+- A performance claim has neither reproduction nor measurement nor deterministic proof and lacks the source-only exception.
 - The proposed target is merely similar rather than directly relevant.
 - The report would duplicate information already present in the target thread.
 - A plausible prior-art candidate could not be fully read.
@@ -137,6 +157,8 @@ Rules:
 - Use exact `path:line`, symbol, field, error, command, and API names where they disambiguate the claim.
 - Pin source links to the audited commit when branch movement could invalidate them.
 - State search coverage without claiming exhaustiveness when result caps or unavailable channels leave gaps.
+- A source-only potential finding must state `Impact: Not measured.` before describing any plausible cost mechanism.
+- Describe what the current code does and what it may cause; never state that users experience an unobserved effect.
 
 ## Duplicate-Search Statement
 
@@ -207,12 +229,15 @@ Do not use the CLI bug form for a source-only performance hypothesis without rep
 
 Use `.github/ISSUE_TEMPLATE/4-bug-report.yml` for reproduced bugs outside the CLI-specific form.
 Provide actual behavior, deterministic reproduction, expected behavior, and relevant evidence.
+Do not use the other bug form for a source-only potential finding without reproducible behavior.
 
 ### Feature request form
 
 Use `.github/ISSUE_TEMPLATE/5-feature-request.yml` only when the request is genuinely an enhancement.
 A source-proven performance concern is not automatically a feature request.
-If no user-visible behavior or realistic cost is established, keep the finding on Hold.
+Under the source-only exception, this form may request a concrete, behavior-preserving optimization.
+Every required field must still be answered truthfully.
+Without explicit user direction or a realistic cost mechanism, keep the finding on Hold.
 
 ### Additional information field
 
@@ -340,6 +365,7 @@ Before publishing, verify every item:
 - The report contains no pull request offer or implementation commitment.
 - The exact disclosure footer is the final section.
 - The applicable duplicate statement is present and every plausible candidate was fully read.
+- A source-only potential finding records the explicit user direction and labels its impact as not measured.
 - The user approved the exact target and final text.
 
 After publication, update `ISSUES.md` with the exact target, status, and URL before returning.
@@ -354,5 +380,6 @@ Return only the created issue or comment URLs and a concise status.
 - Never revive a closed issue with an unrelated root cause.
 - Never use an active issue as a generic component discussion.
 - Never report unverified static patterns as production bugs.
+- User-requested source-only findings remain prohibited when reachability, control flow, or realistic cost is unverified.
 - Never hide uncertainty or fabricate measurements, commands, logs, versions, subscriptions, or maintainer intent.
 - Never alter the required disclosure footer.
