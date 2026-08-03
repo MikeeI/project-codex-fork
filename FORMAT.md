@@ -29,9 +29,27 @@ These rules implement the issue-first policy in `docs/contributing.md`, which sa
 - Increment the allocator in the same edit.
 - The ledger check does not replace upstream issue, pull request, discussion, and release searches.
 - Never reuse, renumber, or scope IDs by crate, component, status, or session.
-- IDs persist through Hold, Drafted, and Published states; external numbers belong in `Location`.
+- IDs persist through every lifecycle state; external numbers belong in `Location`.
 - At the first finding of a UTC year, start `ISSUE-YYYY-001`; never alter older IDs.
 - Entry headings use `### ISSUE-YYYY-NNN — <area>: <specific title>`.
+
+## Finding Lifecycle
+
+Use exactly one lifecycle status for each `ISSUES.md` entry:
+
+- `Hold` means reporting may still be appropriate, but research, evidence, drafting, target selection, or approval remains open.
+- `Drafted` means an exact report or comment draft exists and awaits approval or publication.
+- `Published` means the approved report or comment was posted; `Location` records its exact URL.
+- `Duplicate` means an existing upstream issue owns the same root cause and no separate report should be opened.
+- `Retired` means completed research shows the finding should not be reported because it is invalid, obsolete, intentional, or not actionable.
+
+`Duplicate` and `Retired` are terminal reporting decisions, but their IDs and research records remain permanent.
+Move a `Duplicate` back to `Hold` only when new evidence would materially advance the existing upstream issue.
+Move a `Retired` finding back to `Hold` only when changed source or materially new evidence invalidates the retirement reason.
+For `Duplicate`, set `Location` to `Existing upstream issue: <URL>.`
+For `Retired`, use `Location: Not published.` and preserve the retirement reason in `Status`.
+After exactly three summary bullets, an entry may include a non-bulleted `Research:` line with the audit date, pinned source, candidates read, search coverage, and target rationale.
+Research records prevent repeated prior-art work, but changed upstream source still requires a focused currentness check.
 
 ## Required Research
 
@@ -126,6 +144,8 @@ Do not publish when any of the following is true:
 - Required issue-form information is unavailable and cannot be established from the environment.
 
 Keep the ledger entry on Hold and state exactly which evidence is missing.
+Use `Duplicate`, not `Hold`, when an existing upstream issue owns the exact root cause.
+Use `Retired`, not `Hold`, when completed research establishes a durable decision not to report the finding.
 
 ### Ask the user
 
@@ -340,13 +360,14 @@ When proposing reports to the user, output each candidate in this stable order:
 
 ```text
 finding: ISSUE-YYYY-NNN
-target: <new issue | issue #N | PR #N>
-action: <open issue | comment | react | hold>
+target: <new issue | issue #N | PR #N | none>
+action: <open issue | comment | react | hold | none>
 reason: <one sentence>
+lifecycle: <Hold | Drafted | Published | Duplicate | Retired>
 title: <new issue title, otherwise omit>
 draft: <complete proposed text, otherwise omit>
 missing: <required evidence, otherwise omit>
-status: proposal only; not published
+publication: proposal only; not published
 ```
 
 For multiple findings, preserve permanent finding IDs and never combine independent root causes.

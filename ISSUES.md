@@ -20,41 +20,49 @@ Location: Not published.
 
 ### ISSUE-2026-002 — core: model requests rebuild the HTTP connection pool
 
-- `build_api_transport` constructs a new reqwest-backed client inside the HTTP request-attempt loop.
-- Consecutive model requests cannot reuse that client's TCP, TLS, HTTP/2, or proxy connections.
-- Client reconstruction is source-proven; connection count and warm-request latency are not measured.
+- Revalidated 2026-08-03 at upstream commit `5157493`: [`build_api_transport`](https://github.com/openai/codex/blob/5157493c23713ac12034cf250ffb0a8ce0670277/codex-rs/core/src/client.rs#L978-L990) still creates the reqwest-backed transport inside the HTTP attempt loop.
+- Open issue [#29369](https://github.com/openai/codex/issues/29369) owns the exact connection-pool root cause; [#36210](https://github.com/openai/codex/issues/36210) explicitly treats it as separate prior work.
+- PR [#34447](https://github.com/openai/codex/pull/34447) added route-aware pooling elsewhere, but no distinct measurement or evidence was found; react to #29369 only.
 
-Status: Hold — thumbs-up reaction on issue #29369 is not yet approved.
-Location: Not published.
+Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issues #29369 and #36210 and PR #34447 were read; #29369 is the sole matching target.
+
+Status: Duplicate — issue #29369 owns the exact root cause; an optional reaction is not yet approved.
+Location: Existing upstream issue: https://github.com/openai/codex/issues/29369.
 
 ### ISSUE-2026-003 — core: request construction deeply copies conversation history twice
 
-- Prompt normalization materializes an owned `Vec<ResponseItem>` from shared session history.
-- Request construction immediately clones the full vector again for each model step and retry.
-- Both copies are source-proven; allocation volume and request-build latency are not measured.
+- Revalidated 2026-08-03 at upstream commit `5157493`: [`for_prompt`](https://github.com/openai/codex/blob/5157493c23713ac12034cf250ffb0a8ce0670277/codex-rs/core/src/context_manager/history.rs#L144-L146) materializes normalized history and [`get_formatted_input_for_request`](https://github.com/openai/codex/blob/5157493c23713ac12034cf250ffb0a8ce0670277/codex-rs/core/src/client_common.rs#L52-L60) immediately clones it.
+- Merged PRs [#28306](https://github.com/openai/codex/pull/28306), [#28313](https://github.com/openai/codex/pull/28313), and [#34825](https://github.com/openai/codex/pull/34825) removed adjacent request-sized clones but not this two-stage copy.
+- No issue, pull request, discussion, or release note owns the remaining copy; long histories make the cost realistic, but allocation volume and request-build latency are not measured.
+
+Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issue #13733 and PRs #28306, #28313, and #34825 were read as adjacent work; none owns the local two-stage copy.
 
 Status: Hold — research supports a source-only feature request; exact draft and user approval are pending.
 Location: Not published.
 
 ### ISSUE-2026-004 — codex-mcp: tool catalog derivations repeat for every sampling step
 
-- Step-context capture rebuilds normalized tools, client maps, and prepared-call maps from the current catalog.
-- The same immutable schema work repeats across tool follow-ups until readiness or catalog revision changes.
-- The repeated derivation is source-proven; CPU and allocation impact for realistic catalogs are not measured.
+- Revalidated 2026-08-03 at upstream commit `5157493`: [`capture_binding_with_metadata`](https://github.com/openai/codex/blob/5157493c23713ac12034cf250ffb0a8ce0670277/codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs#L145-L293) rebuilds normalized tools, client maps, and prepared-call maps for each sampling request.
+- PR [#34588](https://github.com/openai/codex/pull/34588) deliberately introduced request-bound catalog revisions for correctness; [#35777](https://github.com/openai/codex/pull/35777) already parallelized catalog resolution.
+- Searches found no exact report, but the broad finding is not actionable until revision-stable schema work is separated and its realistic cost is proven.
 
-Status: Hold — per-request binding rebuild is intentional in PR #34588; a separable stable-schema cost remains unproven.
+Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). PRs #34588 and #35777 were read; related MCP startup and catalog results had different root causes.
+
+Status: Retired — the broad claim conflicts with deliberate request-bound catalog design in PR #34588; any stable-schema concern requires a new, separately proven finding.
 Location: Not published.
 
 ## TUI Issues
 
 ### ISSUE-2026-005 — tui: transcript measurement and painting rebuild the same layout
 
-- The default height path materializes display lines and computes wrapped row counts before painting.
-- Painting the same frame materializes the lines and wrapped row counts again at the same width.
-- The duplicate default-path work is source-proven; frame-time impact for large transcripts is not measured.
+- Revalidated 2026-08-03 at upstream commit `5157493`: [`TranscriptAreaRenderable`](https://github.com/openai/codex/blob/5157493c23713ac12034cf250ffb0a8ce0670277/codex-rs/tui/src/chatwidget/rendering.rs#L71-L91) still materializes and measures transcript lines separately in `desired_height` and `render`.
+- Open issue [#21945](https://github.com/openai/codex/issues/21945) owns this root cause and now contains current profiling; PR [#34348](https://github.com/openai/codex/pull/34348) cached repeated height queries but not the separate paint pass.
+- The existing thread already states that measurement and rendering derive lines independently, so no distinct comment evidence remains; react to #21945 only.
 
-Status: Hold — thumbs-up reaction on issue #21945 is not yet approved.
-Location: Not published.
+Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). The complete #21945 thread and PR #34348 were read; they already contain the useful diagnosis and current sample.
+
+Status: Duplicate — issue #21945 owns the exact root cause and already contains current profiling; an optional reaction is not yet approved.
+Location: Existing upstream issue: https://github.com/openai/codex/issues/21945.
 
 ### ISSUE-2026-006 — tui: history grouping fully renders cells only to test visibility
 
@@ -118,9 +126,11 @@ Location: Not published.
 
 ### ISSUE-2026-012 — exec-server: event history and broadcast deeply copy output payloads
 
-- Publishing clones each owned output event into history before moving the original into broadcast.
-- A new subscriber can deeply clone the retained replay again while holding the history lock.
-- Both clone paths are source-proven; allocation and retained-memory impact are not measured.
+- Revalidated 2026-08-03 at upstream commit `5157493`: [`publish` and `subscribe`](https://github.com/openai/codex/blob/5157493c23713ac12034cf250ffb0a8ce0670277/codex-rs/exec-server/src/process.rs#L121-L151) deeply clone `Vec<u8>` output into history and retained replay, with the latter clone under the history lock.
+- PR [#30273](https://github.com/openai/codex/pull/30273) made pushed events the normal remote-exec path; [#31576](https://github.com/openai/codex/pull/31576) bounded retained events and bytes without removing these copies.
+- No issue, pull request, discussion, or release note owns the clone path; every output event makes the cost realistic, but allocation and retained-memory impact are not measured.
+
+Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). PRs #30273 and #31576 were read as the owning design history; no external thread owns the clone concern.
 
 Status: Hold — research supports a source-only feature request; exact draft and user approval are pending.
 Location: Not published.
@@ -138,9 +148,11 @@ Location: Not published.
 
 ### ISSUE-2026-014 — exec: resume lookup reads candidate rollout files serially
 
-- Resume lookup can read complete rollout files one after another to recover each candidate's latest working directory.
-- The `--all` path can perform the same read before accepting the first ordered candidate without a CWD filter.
-- The serial reads are source-proven; realistic rollout sizes and resume latency are not measured.
+- Revalidated 2026-08-03 at upstream commit `5157493`: [`latest_thread_cwd` and resume lookup](https://github.com/openai/codex/blob/5157493c23713ac12034cf250ffb0a8ce0670277/codex-rs/exec/src/lib.rs#L1430-L1500) read each candidate rollout fully and serially, including one needless read before the `--all` short-circuit.
+- Open issue [#22411](https://github.com/openai/codex/issues/22411) owns the same rollout-scan family and reports 39–46 second default `thread/list` calls versus 0.173 seconds with state-DB-only listing.
+- A comment on #22411 should add this separate exec-side second pass; closed PR [#16338](https://github.com/openai/codex/pull/16338) confirms latest-CWD depends on rollout contents, while this pass's incremental latency remains unmeasured.
+
+Research: Open and closed issue, pull-request, discussion, and release searches were completed 2026-08-03 through release [0.146.0](https://github.com/openai/codex/releases/tag/rust-v0.146.0). Issues #22411, #16158, #21211, and #24510 and PR #16338 were read; #22411 is the only direct comment target.
 
 Status: Hold — source-analysis comment on issue #22411 is not yet drafted or approved.
 Location: Not published.
