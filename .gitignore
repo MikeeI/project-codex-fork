@@ -37,6 +37,7 @@ AGENTS.override.md
 # caches
 .cache/
 .turbo/
+.codegraph/
 .parcel-cache/
 .eslintcache
 .nyc_output/
