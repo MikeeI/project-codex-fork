@@ -24,7 +24,7 @@ Location: Not published.
 - Consecutive model requests cannot reuse that client's TCP, TLS, HTTP/2, or proxy connections.
 - Client reconstruction is source-proven; connection count and warm-request latency are not measured.
 
-Status: Hold — upstream research and connection-reuse measurement pending.
+Status: Hold — thumbs-up reaction on issue #29369 is not yet approved.
 Location: Not published.
 
 ### ISSUE-2026-003 — core: request construction deeply copies conversation history twice
@@ -33,7 +33,7 @@ Location: Not published.
 - Request construction immediately clones the full vector again for each model step and retry.
 - Both copies are source-proven; allocation volume and request-build latency are not measured.
 
-Status: Hold — upstream research and allocation measurement pending.
+Status: Hold — research supports a source-only feature request; exact draft and user approval are pending.
 Location: Not published.
 
 ### ISSUE-2026-004 — codex-mcp: tool catalog derivations repeat for every sampling step
@@ -42,7 +42,7 @@ Location: Not published.
 - The same immutable schema work repeats across tool follow-ups until readiness or catalog revision changes.
 - The repeated derivation is source-proven; CPU and allocation impact for realistic catalogs are not measured.
 
-Status: Hold — upstream research and catalog-size measurement pending.
+Status: Hold — per-request binding rebuild is intentional in PR #34588; a separable stable-schema cost remains unproven.
 Location: Not published.
 
 ## TUI Issues
@@ -53,7 +53,7 @@ Location: Not published.
 - Painting the same frame materializes the lines and wrapped row counts again at the same width.
 - The duplicate default-path work is source-proven; frame-time impact for large transcripts is not measured.
 
-Status: Hold — upstream research and frame profiling pending.
+Status: Hold — thumbs-up reaction on issue #21945 is not yet approved.
 Location: Not published.
 
 ### ISSUE-2026-006 — tui: history grouping fully renders cells only to test visibility
@@ -122,7 +122,7 @@ Location: Not published.
 - A new subscriber can deeply clone the retained replay again while holding the history lock.
 - Both clone paths are source-proven; allocation and retained-memory impact are not measured.
 
-Status: Hold — upstream research and output-allocation measurement pending.
+Status: Hold — research supports a source-only feature request; exact draft and user approval are pending.
 Location: Not published.
 
 ### ISSUE-2026-013 — exec-server: successful exits aggregate output for a false classification
@@ -142,5 +142,5 @@ Location: Not published.
 - The `--all` path can perform the same read before accepting the first ordered candidate without a CWD filter.
 - The serial reads are source-proven; realistic rollout sizes and resume latency are not measured.
 
-Status: Hold — upstream research and resume-latency reproduction pending.
+Status: Hold — source-analysis comment on issue #22411 is not yet drafted or approved.
 Location: Not published.
